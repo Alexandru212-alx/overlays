@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>ReLife - Banner Discord</title>
+<style>
+  /* Streamlabs: Browser Source -> Local File, Width 1080, Height 220 */
+  @property --a { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  :root{--red:#e11d2a;--red2:#ff3b47;--gold:#ffc94d;--cyan:#38e8ff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:transparent;
+    font-family:"Segoe UI","Montserrat","Arial Black",Arial,sans-serif;color:#fff}
+
+  .wrap{position:absolute;inset:1.4vw 1.6vw}
+
+  /* rama cu lumina care alearga in jurul bannerului */
+  .frame{position:absolute;inset:0;border-radius:2.4vw;padding:.38vw;
+    background:conic-gradient(from var(--a), rgba(255,59,71,.15) 0deg, var(--red2) 40deg, #fff 60deg, var(--red2) 80deg,
+      rgba(255,59,71,.15) 140deg, rgba(255,59,71,.15) 180deg, var(--red2) 220deg, #fff 240deg, var(--red2) 260deg, rgba(255,59,71,.15) 320deg);
+    animation:spin 3.2s linear infinite;
+    filter:drop-shadow(0 0 1.2vw rgba(255,59,71,.75))}
+  @keyframes spin{to{--a:360deg}}
+
+  .bar{position:relative;width:100%;height:100%;border-radius:2.05vw;overflow:hidden;
+    background:linear-gradient(260deg,#08080a 0%,#160406 45%,#3a0309 100%);
+    display:flex;align-items:center;padding:0 3vw;gap:2.8vw}
+
+  canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hex{position:absolute;inset:0;opacity:.13;
+    background-image:radial-gradient(circle at 1px 1px, #fff 1px, transparent 1.4px);
+    background-size:1.6vw 1.6vw;animation:drift 8s linear infinite}
+  @keyframes drift{to{background-position:1.6vw 1.6vw}}
+  .scan{position:absolute;inset:0;
+    background:linear-gradient(to bottom, transparent 0%, rgba(255,59,71,.18) 50%, transparent 100%);
+    height:35%;animation:scan 2.8s ease-in-out infinite;mix-blend-mode:screen}
+  @keyframes scan{0%{transform:translateY(-110%)}100%{transform:translateY(320%)}}
+  .sweep{position:absolute;top:-60%;bottom:-60%;width:14%;left:-30%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    transform:rotate(20deg);animation:sweep 4.5s cubic-bezier(.6,0,.3,1) infinite}
+  @keyframes sweep{0%{left:-30%}45%,100%{left:130%}}
+
+  /* iconita cu orbita */
+  .icon{position:relative;z-index:2;flex-shrink:0;width:12.5vw;height:12.5vw;display:flex;align-items:center;justify-content:center}
+  .orb{position:absolute;inset:1.6vw;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ff6a72,#c0121d 55%,#3a0005);
+    box-shadow:0 0 2.4vw rgba(255,59,71,.95), inset 0 -.8vw 1.6vw rgba(0,0,0,.45);
+    animation:breathe 2s ease-in-out infinite}
+  @keyframes breathe{50%{transform:scale(1.07)}}
+  .orbit{position:absolute;inset:0;border-radius:50%;border:.25vw dashed rgba(255,255,255,.35);animation:rot 6s linear infinite}
+  .orbit::after{content:"";position:absolute;top:-.7vw;left:50%;width:1.4vw;height:1.4vw;margin-left:-.7vw;border-radius:50%;
+    background:#fff;box-shadow:0 0 1.2vw #fff,0 0 2.4vw var(--red2)}
+  .orbit2{position:absolute;inset:.6vw;border-radius:50%;border:.3vw solid transparent;
+    border-top-color:var(--red2);border-left-color:var(--red2);animation:rot 1.8s linear infinite reverse}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .icon svg{position:relative;width:5vw;height:5vw;animation:wiggle 2.4s ease-in-out infinite}
+  @keyframes tilt{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(8deg) translateY(-.5vw)}}
+  @keyframes wiggle{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(-14deg)}20%{transform:rotate(12deg)}30%{transform:rotate(-8deg)}40%{transform:rotate(4deg)}}
+  .ping{position:absolute;inset:1.6vw;border-radius:50%;border:.35vw solid var(--red2);animation:ping 2s ease-out infinite}
+  @keyframes ping{from{transform:scale(1);opacity:.9}to{transform:scale(1.55);opacity:0}}
+
+  .text{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0;overflow:hidden}
+  .top{font-size:2.9vw;font-weight:800;letter-spacing:.55vw;color:var(--red2);text-transform:uppercase;
+    text-shadow:0 0 1.2vw rgba(255,59,71,.9);white-space:nowrap}
+  .main{position:relative;font-size:5.6vw;font-weight:900;line-height:1.08;white-space:nowrap;text-transform:none}
+  .main .hl{color:var(--gold);text-shadow:0 0 1.5vw rgba(255,201,77,.8)}
+  .main .soft{opacity:.7}
+
+  /* efect glitch */
+  .glitch{position:relative;display:inline-block}
+  .glitch.on::before,.glitch.on::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;overflow:hidden}
+  .glitch.on::before{color:var(--cyan);transform:translate(-.35vw,0);clip-path:inset(10% 0 55% 0);animation:g1 .35s steps(2) infinite;mix-blend-mode:screen}
+  .glitch.on::after{color:var(--red2);transform:translate(.35vw,0);clip-path:inset(55% 0 8% 0);animation:g2 .35s steps(2) infinite;mix-blend-mode:screen}
+  @keyframes g1{0%{clip-path:inset(5% 0 70% 0)}50%{clip-path:inset(40% 0 30% 0)}100%{clip-path:inset(70% 0 5% 0)}}
+  @keyframes g2{0%{clip-path:inset(60% 0 10% 0)}50%{clip-path:inset(15% 0 60% 0)}100%{clip-path:inset(30% 0 45% 0)}}
+  .main.shake{animation:shake .35s steps(3)}
+  @keyframes shake{0%{transform:translate(0)}33%{transform:translate(-.4vw,.15vw) skewX(-6deg)}66%{transform:translate(.4vw,-.1vw) skewX(5deg)}100%{transform:none}}
+
+  .chips{display:flex;gap:1.4vw;margin-top:.8vw;min-height:4.4vw}
+  .chip{display:flex;align-items:center;gap:.8vw;padding:.5vw 1.6vw;border-radius:999px;
+    background:rgba(255,255,255,.08);border:.22vw solid rgba(255,255,255,.2);backdrop-filter:blur(4px);
+    font-size:2.6vw;font-weight:800;letter-spacing:.2vw;white-space:nowrap;text-transform:uppercase;
+    opacity:0;transform:translateY(2vw) scale(.6)}
+  .chip svg{width:2.8vw;height:2.8vw}
+  .chip.gold{border-color:var(--gold);color:var(--gold);background:rgba(255,201,77,.12);box-shadow:0 0 1.2vw rgba(255,201,77,.35)}
+  .chip.red{border-color:var(--red2);background:rgba(225,29,42,.22);box-shadow:0 0 1.2vw rgba(255,59,71,.4)}
+  .chip.show{animation:chipIn .7s cubic-bezier(.2,1.6,.4,1) forwards}
+  @keyframes chipIn{to{opacity:1;transform:none}}
+  .chip.show.idle{animation:chipIn .7s cubic-bezier(.2,1.6,.4,1) forwards, float 2.4s ease-in-out .7s infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-.4vw)}}
+
+  /* egalizator "LIVE" in dreapta */
+  .eq{position:relative;z-index:2;display:flex;align-items:flex-end;gap:.45vw;height:7vw;flex-shrink:0}
+  .eq i{display:block;width:.9vw;border-radius:.5vw;background:linear-gradient(to top,var(--red),var(--red2),#fff);
+    box-shadow:0 0 .8vw rgba(255,59,71,.8);animation:eq 1s ease-in-out infinite}
+  .eq i:nth-child(1){animation-duration:.9s}.eq i:nth-child(2){animation-duration:.6s}
+  .eq i:nth-child(3){animation-duration:1.1s}.eq i:nth-child(4){animation-duration:.75s}.eq i:nth-child(5){animation-duration:.95s}
+  @keyframes eq{0%,100%{height:20%}50%{height:100%}}
+  .live{position:absolute;top:-2.4vw;left:50%;transform:translateX(-50%);font-size:1.7vw;font-weight:900;letter-spacing:.3vw;
+    color:#fff;background:var(--red);padding:.15vw .8vw;border-radius:.5vw;box-shadow:0 0 1vw var(--red2);animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.45}}
+
+  .wrap{animation:enter 1s cubic-bezier(.2,1,.2,1) both}
+  @keyframes enter{0%{opacity:0;transform:scaleX(.2);filter:blur(10px)}60%{opacity:1;filter:blur(0)}100%{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="frame"><div class="bar">
+    <div class="hex"></div>
+    <canvas id="fx"></canvas>
+    <div class="scan"></div>
+    <div class="sweep"></div>
+
+    <div class="icon">
+      <div class="ping"></div>
+      <div class="orb"></div>
+      <div class="orbit"></div>
+      <div class="orbit2"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><circle cx="9" cy="12" r=".7" fill="#fff"/><circle cx="12" cy="12" r=".7" fill="#fff"/><circle cx="15" cy="12" r=".7" fill="#fff"/></svg>
+    </div>
+
+    <div class="text">
+      <div class="top" id="top"></div>
+      <div class="main" id="main"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="eq"><span class="live">LIVE</span><i></i><i></i><i></i><i></i><i></i></div>
+  </div></div>
+</div>
+
+<script>
+/* =========================================================
+   TEXTELE (le poti schimba). Fiecare "slide" apare pe rand.
+   main: textul mare; [[...]] = colorat auriu, {{...}} = estompat
+   ========================================================= */
+const SLIDES = [
+ {
+  "top": "Intră în comunitate · Discord",
+  "main": "{{discord.gg/}}ReLifeRp",
+  "chips": [
+   {
+    "text": "Anunțuri",
+    "style": "red",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9\"/><path d=\"M10 21a2 2 0 0 0 4 0\"/></svg>"
+   },
+   {
+    "text": "Giveaway-uri",
+    "style": "gold",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13\"/><path d=\"M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7\"/><path d=\"M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5\"/></svg>"
+   }
+  ]
+ },
+ {
+  "top": "Ai nevoie de ajutor?",
+  "main": "Suport [[24/7]] pe Discord",
+  "chips": [
+   {
+    "text": "discord.gg/ReLifeRp",
+    "style": "red",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z\"/><circle cx=\"9\" cy=\"12\" r=\".7\" fill=\"#fff\"/><circle cx=\"12\" cy=\"12\" r=\".7\" fill=\"#fff\"/><circle cx=\"15\" cy=\"12\" r=\".7\" fill=\"#fff\"/></svg>"
+   }
+  ]
+ },
+ {
+  "top": "Nu juca singur",
+  "main": "Găsește-ți [[echipa]]",
+  "chips": [
+   {
+    "text": "discord.gg/ReLifeRp",
+    "style": "gold",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z\"/><circle cx=\"9\" cy=\"12\" r=\".7\" fill=\"#fff\"/><circle cx=\"12\" cy=\"12\" r=\".7\" fill=\"#fff\"/><circle cx=\"15\" cy=\"12\" r=\".7\" fill=\"#fff\"/></svg>"
+   }
+  ]
+ }
+];
+const SECUNDE_PE_SLIDE = 7;
+/* ========================================================= */
+
+const elTop = document.getElementById('top');
+const elMain = document.getElementById('main');
+const elChips = document.getElementById('chips');
+const GLYPHS = '!<>-_\\/[]{}=+*^?#ABCDEFGHJKLMNPRSTUVXYZ0123456789';
+
+function render(str){ // [[x]] -> auriu, {{x}} -> estompat
+  return str.replace(/\[\[(.+?)\]\]/g,'<span class="hl">$1</span>').replace(/\{\{(.+?)\}\}/g,'<span class="soft">$1</span>');
+}
+function plain(str){ return str.replace(/\[\[|\]\]|\{\{|\}\}/g,''); }
+
+// efect "decodare" litera cu litera
+function scramble(el, finalStr, ms, done){
+  const target = plain(finalStr); const start = performance.now();
+  function frame(now){
+    const t = Math.min(1,(now-start)/ms);
+    const reveal = Math.floor(t*target.length);
+    let out='';
+    for(let k=0;k<target.length;k++){
+      const ch = target[k];
+      if(k<reveal || ch===' ') out+=ch;
+      else out+='<span style="color:#ff3b47;opacity:.85">'+GLYPHS[Math.floor(Math.random()*GLYPHS.length)]+'</span>';
+    }
+    el.innerHTML = out;
+    if(t<1) requestAnimationFrame(frame); else { el.innerHTML = render(finalStr); done && done(); }
+  }
+  requestAnimationFrame(frame);
+}
+
+function glitchMain(){
+  elMain.classList.remove('shake'); void elMain.offsetWidth; elMain.classList.add('shake');
+  const g = elMain.querySelector('.glitch');
+  if(g){ g.classList.add('on'); setTimeout(()=>g.classList.remove('on'),380); }
+}
+
+let idx = 0;
+function showSlide(){
+  const s = SLIDES[idx];
+  elChips.innerHTML = '';
+  scramble(elTop, s.top, 500);
+  // potriveste marimea textului mare ca sa nu iasa din banner
+  elMain.style.fontSize=''; elMain.innerHTML = render(s.main);
+  const r = elMain.clientWidth / elMain.scrollWidth;
+  if (r < 1) elMain.style.fontSize = (5.6 * r * 0.97) + 'vw';
+  setTimeout(()=>{
+    scramble(elMain, s.main, 700, ()=>{
+      elMain.innerHTML = '<span class="glitch" data-t="'+plain(s.main).replace(/"/g,'')+'">'+render(s.main)+'</span>';
+      glitchMain();
+      (s.chips||[]).forEach((c,k)=>{
+        const d = document.createElement('div');
+        d.className = 'chip ' + (c.style||'');
+        d.innerHTML = (c.icon||'') + c.text;
+        if (/discord\.gg/i.test(c.text)) d.style.textTransform = 'none';
+        elChips.appendChild(d);
+        setTimeout(()=>{ d.classList.add('show'); setTimeout(()=>d.classList.add('idle'),700); }, 150 + k*220);
+      });
+    });
+  }, 250);
+  idx = (idx+1) % SLIDES.length;
+}
+showSlide();
+setInterval(showSlide, SECUNDE_PE_SLIDE*1000);
+setInterval(()=>{ if(Math.random()<.6) glitchMain(); }, 2600);
+
+/* scantei care zboara prin banner */
+const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+let W,H,P=[];
+function size(){ W=cv.width=cv.offsetWidth*devicePixelRatio; H=cv.height=cv.offsetHeight*devicePixelRatio; }
+size(); addEventListener('resize',size);
+function spawn(){ return {x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.6*devicePixelRatio, vy:-(0.6+Math.random()*1.6)*devicePixelRatio,
+  r:(0.8+Math.random()*2.2)*devicePixelRatio, life:1, hue:Math.random()<.8?355:45}; }
+for(let k=0;k<70;k++){ const p=spawn(); p.y=Math.random()*H; P.push(p); }
+(function loop(){
+  ctx.clearRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  for(const p of P){
+    p.x+=p.vx; p.y+=p.vy; p.life-=0.004;
+    if(p.y<-10||p.life<=0) Object.assign(p,spawn());
+    const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
+    g.addColorStop(0,`hsla(${p.hue},100%,70%,${.9*p.life})`); g.addColorStop(1,`hsla(${p.hue},100%,50%,0)`);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*4,0,Math.PI*2); ctx.fill();
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

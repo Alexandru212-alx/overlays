@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Playeri online</title>
+<style>
+  /* =====================================================
+     SETARI - schimba doar aici
+     ===================================================== */
+  :root {
+    --culoare-principala: #00e58f;   /* verde (punctul si numarul) */
+    --fundal: rgba(10, 14, 20, 0.80); /* fundalul cutiei */
+    --text: #ffffff;
+  }
+  /* ===================================================== */
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: "Segoe UI", "Montserrat", Arial, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+  }
+  .box {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 18px 34px;
+    background: var(--fundal);
+    border: 2px solid var(--culoare-principala);
+    border-radius: 999px;
+    box-shadow: 0 0 25px rgba(0, 229, 143, 0.35);
+    color: var(--text);
+  }
+  .dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--culoare-principala);
+    box-shadow: 0 0 12px var(--culoare-principala);
+    animation: puls 1.6s infinite;
+    flex-shrink: 0;
+  }
+  .dot.off { background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; }
+  @keyframes puls {
+    0%   { transform: scale(1);   opacity: 1; }
+    50%  { transform: scale(1.35); opacity: .6; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .text { display: flex; flex-direction: column; line-height: 1.05; }
+  .label {
+    font-size: 22px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    opacity: .85;
+    text-transform: uppercase;
+  }
+  .count { font-size: 56px; font-weight: 800; }
+  .count .now { color: var(--culoare-principala); }
+  .count .max { opacity: .7; font-size: 40px; }
+  .bump { animation: bump .5s ease; }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="box">
+    <div class="dot" id="dot"></div>
+    <div class="text">
+      <div class="label" id="label">Jucători online</div>
+      <div class="count" id="count"><span class="now">--</span><span class="max"> / --</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* =====================================================
+     PUNE AICI CODUL SERVERULUI (din cfx.re/join/XXXXXX)
+     Exemplu: daca link-ul e cfx.re/join/abc123  ->  "abc123"
+     ===================================================== */
+  const COD_SERVER = "vg6kre";
+
+  const SECUNDE_REFRESH = 20;  // la cate secunde se actualizeaza
+  /* ===================================================== */
+
+  const elCount = document.getElementById("count");
+  const elDot = document.getElementById("dot");
+  const elLabel = document.getElementById("label");
+  let ultim = null;
+
+  async function actualizeaza() {
+    if (!COD_SERVER || COD_SERVER === "PUNE_CODUL_AICI") {
+      elLabel.textContent = "Pune codul serverului";
+      elDot.classList.add("off");
+      return;
+    }
+    try {
+      const surse = [
+        "https://frontend.cfx-services.net/api/servers/single/",
+        "https://servers-frontend.fivem.net/api/servers/single/"
+      ];
+      let j = null;
+      for (const baza of surse) {
+        try {
+          const r = await fetch(baza + encodeURIComponent(COD_SERVER), { cache: "no-store" });
+          if (!r.ok) continue;
+          j = await r.json();
+          if (j && (j.Data || j.data)) break;
+        } catch (err) { /* incearca urmatoarea sursa */ }
+      }
+      if (!j) throw new Error("fara raspuns");
+      const d = j.Data || j.data || {};
+      const acum = d.clients ?? d.selfReportedClients ?? 0;
+      const max = d.sv_maxclients ?? (d.vars && (d.vars.sv_maxClients || d.vars.sv_maxclients)) ?? "?";
+
+      elCount.innerHTML =
+        '<span class="now">' + acum + '</span><span class="max"> / ' + max + '</span>';
+      if (ultim !== null && ultim !== acum) {
+        elCount.classList.remove("bump");
+        void elCount.offsetWidth;
+        elCount.classList.add("bump");
+      }
+      ultim = acum;
+      elLabel.textContent = "Jucători online";
+      elDot.classList.remove("off");
+    } catch (e) {
+      elLabel.textContent = "Server offline";
+      elDot.classList.add("off");
+    }
+  }
+
+  actualizeaza();
+  setInterval(actualizeaza, SECUNDE_REFRESH * 1000);
+</script>
+</body>
+</html>
